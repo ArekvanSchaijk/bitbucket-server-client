@@ -1,0 +1,12 @@
+{
+  "name": "arekvanschaijk/bitbucket-server-client",
+  "description": "Bitbucket Server Client for PHP",
+  "require" : {
+    "guzzlehttp/guzzle" : "5.3.*"
+  },
+  "autoload" : {
+    "psr-4": {
+      "ArekvanSchaijk\\BitbucketServerClient\\" : "src"
+    }
+  }
+}
