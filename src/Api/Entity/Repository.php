@@ -1,5 +1,6 @@
 <?php
 namespace ArekvanSchaijk\BitbucketServerClient\Api\Entity;
+use ArekvanSchaijk\BitbucketServerClient\Api;
 
 /**
  * Class Repository
@@ -68,6 +69,11 @@ class Repository
      * @var string
      */
     protected $sshCloneUrl;
+
+    /**
+     * @var array
+     */
+    protected $commits = [];
 
     public function getId()
     {
@@ -187,6 +193,15 @@ class Repository
     public function setSshCloneUrl($sshCloneUrl)
     {
         $this->sshCloneUrl = $sshCloneUrl;
+    }
+
+    public function getCommits($branchName = 'master')
+    {
+        if (!isset($this->commits[$branchName])) {
+            $api = new Api();
+            $this->commits[$branchName] = $api->getCommits($this, $branchName);
+        }
+        return $this->commits[$branchName];
     }
 
 }
