@@ -4,11 +4,11 @@ namespace ArekvanSchaijk\BitbucketServerClient\Api\Exception;
 use ArekvanSchaijk\BitbucketServerClient\Exception;
 
 /**
- * Class NoProjectKeyGivenException
+ * Class UnauthorizedException
  * @package ArekvanSchaijk\BitbucketServerClient\Api\Exception
  * @author Arek van Schaijk <info@ucreation.nl>
  */
-class NoProjectKeyGivenException extends Exception
+class UnauthorizedException extends Exception
 {
 
 }
