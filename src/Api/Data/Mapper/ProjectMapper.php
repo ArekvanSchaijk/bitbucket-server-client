@@ -6,7 +6,6 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 
 /**
  * Class ProjectMapper
- * @package ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 class ProjectMapper extends Adapter

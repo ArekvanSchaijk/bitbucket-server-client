@@ -1,10 +1,10 @@
 <?php
 namespace ArekvanSchaijk\BitbucketServerClient\Api\Entity;
+
 use ArekvanSchaijk\BitbucketServerClient\Api;
 
 /**
  * Class Repository
- * @package ArekvanSchaijk\BitbucketServerClient\Api\Entity
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 class Repository

@@ -6,7 +6,6 @@ use GuzzleHttp\Psr7\Response;
 
 /**
  * Class Adapter
- * @package ArekvanSchaijk\BitbucketServerClient\Api\Data
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 abstract class Adapter extends \SplObjectStorage

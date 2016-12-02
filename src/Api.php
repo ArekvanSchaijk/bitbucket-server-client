@@ -8,11 +8,9 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\UnauthorizedException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Psr7\Response;
 
 /**
  * Class Api
- * @package ArekvanSchaijk\BitbucketServerClient
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 class Api

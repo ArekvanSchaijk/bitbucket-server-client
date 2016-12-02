@@ -5,7 +5,6 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Data\Adapter;
 
 /**
  * Class CommitMapper
- * @package ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 class CommitMapper extends Adapter

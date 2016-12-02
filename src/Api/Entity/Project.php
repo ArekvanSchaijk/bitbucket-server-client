@@ -6,7 +6,6 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Exception;
 
 /**
  * Class Project
- * @package ArekvanSchaijk\BitbucketServerClient\Api\Entity
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 class Project

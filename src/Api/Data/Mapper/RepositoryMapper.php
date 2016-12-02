@@ -6,7 +6,6 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 
 /**
  * Class ProjectMapper
- * @package ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper
  * @author Arek van Schaijk <info@ucreation.nl>
  */
 class RepositoryMapper extends Adapter
@@ -37,7 +36,8 @@ class RepositoryMapper extends Adapter
      * @return Repository
      * @static
      */
-    static public function map($data) {
+    static public function map($data)
+    {
         $repository = new Repository();
         $repository->setId((int)$data->id);
         $repository->setName((string)$data->name);
