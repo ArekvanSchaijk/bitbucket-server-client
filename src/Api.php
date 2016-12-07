@@ -1,9 +1,9 @@
 <?php
 namespace ArekvanSchaijk\BitbucketServerClient;
 
-use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\CommitMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\ProjectMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\BranchMapper;
+use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\CommitMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\UnauthorizedException;
