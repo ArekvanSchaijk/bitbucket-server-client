@@ -71,6 +71,11 @@ class Repository
     protected $sshCloneUrl;
 
     /**
+     * @var null|\SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch>
+     */
+    protected $branches;
+
+    /**
      * @var array
      */
     protected $commits = [];
@@ -193,6 +198,20 @@ class Repository
     public function setSshCloneUrl($sshCloneUrl)
     {
         $this->sshCloneUrl = $sshCloneUrl;
+    }
+
+    /**
+     * Gets the Branches
+     *
+     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch>
+     */
+    public function getBranches()
+    {
+        if (is_null($this->branches)) {
+            $api = new Api();
+            $this->branches = $api->getRepositoryBranches($this);
+        }
+        return $this->branches;
     }
 
     public function getCommits($branchName = 'master')

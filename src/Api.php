@@ -3,6 +3,7 @@ namespace ArekvanSchaijk\BitbucketServerClient;
 
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\CommitMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\ProjectMapper;
+use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\BranchMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\UnauthorizedException;
@@ -105,6 +106,24 @@ class Api
             $response = $this->getClient()->request('GET',
                 self::$endpoint . sprintf('/rest/api/1.0/projects/%s/repos?limit=' . $limit, $projectKey), self::$auth);
             return new RepositoryMapper($response);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Gets the Repository Branches
+     *
+     * @param Repository $repository
+     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch>
+     */
+    public function getRepositoryBranches(Repository $repository)
+    {
+        try {
+            $response = $this->getClient()->request('GET',
+                self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
+                '/repos/' . $repository->getSlug() . '/branches', self::$auth);
+            return new BranchMapper($response);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
         }
