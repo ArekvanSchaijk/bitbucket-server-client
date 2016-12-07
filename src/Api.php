@@ -113,12 +113,18 @@ class Api
         }
     }
 
+    /**
+     * Gets the Repository Branches
+     *
+     * @param Repository $repository
+     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch>
+     */
     public function getRepositoryBranches(Repository $repository)
     {
         try {
             $response = $this->getClient()->request('GET',
-            self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
-            '/repos/' . $repository->getSlug() . '/branches', self::$auth);
+                self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
+                '/repos/' . $repository->getSlug() . '/branches', self::$auth);
             return new BranchMapper($response);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
