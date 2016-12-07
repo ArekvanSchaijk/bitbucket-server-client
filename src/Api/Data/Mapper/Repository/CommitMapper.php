@@ -1,5 +1,5 @@
 <?php
-namespace ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper;
+namespace ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository;
 
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Adapter;
 
@@ -20,6 +20,7 @@ class CommitMapper extends Adapter
         $data = $this->json();
         echo '<pre>';
         print_r($data);
+        echo '</pre>';
 
     }
 
