@@ -2,8 +2,7 @@
   "name": "arekvanschaijk/bitbucket-server-client",
   "description": "Bitbucket Server Client for PHP",
   "require" : {
-    "guzzlehttp/guzzle" : "^6",
-    "sebastian/git": "^2"
+    "guzzlehttp/guzzle" : "^6"
   },
   "autoload" : {
     "psr-4": {
