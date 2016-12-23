@@ -195,7 +195,7 @@ class Project
      * Creates a new Repository in this project
      *
      * @param Repository $repository
-     * @return Project
+     * @return Repository
      */
     public function createRepository(Repository $repository)
     {
