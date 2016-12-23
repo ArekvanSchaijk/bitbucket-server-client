@@ -120,6 +120,29 @@ class Api
     }
 
     /**
+     * Create Repository
+     *
+     * @param Project $project
+     * @param Repository $repository
+     * @return Repository
+     */
+    public function createRepository(Project $project, Repository $repository = null)
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'name' => $repository->getName()
+            ]
+        ]);
+        try {
+            $response = $this->getClient()->request('POST', self::$endpoint . '/rest/api/1.0/projects/'
+                . $project->getKey() . '/repos?create', $options);
+            return self::mapSingleResponse($response, RepositoryMapper::class);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
      * Gets the Repositories
      *
      * @param string $projectKey

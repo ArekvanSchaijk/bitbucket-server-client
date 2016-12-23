@@ -191,4 +191,16 @@ class Project
         return $this->repositories;
     }
 
+    /**
+     * Creates a new Repository in this project
+     *
+     * @param Repository $repository
+     * @return Project
+     */
+    public function createRepository(Repository $repository)
+    {
+        $api = new Api();
+        return $api->createRepository($this, $repository);
+    }
+
 }
