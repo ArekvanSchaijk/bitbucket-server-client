@@ -5,10 +5,13 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\ProjectMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\BranchMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\CommitMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
+use ArekvanSchaijk\BitbucketServerClient\Api\Exception\ConflictException;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\UnauthorizedException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Class Api
@@ -30,7 +33,7 @@ class Api
     /**
      * @var array
      */
-    static protected $auth = [];
+    static protected $options = [];
 
     /**
      * Sets the Endpoint
@@ -51,7 +54,7 @@ class Api
      */
     public function login($username, $password)
     {
-        self::$auth = ['auth' => [$username, $password]];
+        self::$options = ['auth' => [$username, $password]];
     }
 
     /**
@@ -61,7 +64,7 @@ class Api
      */
     public function logout()
     {
-        self::$auth = [];
+        self::$options = [];
     }
 
     /**
@@ -86,8 +89,31 @@ class Api
     public function getProjects($limit = 1000)
     {
         try {
-            $response = $this->getClient()->request('GET', self::$endpoint . '/rest/api/1.0/projects?limit=' . $limit, self::$auth);
+            $response = $this->getClient()->request('GET', self::$endpoint . '/rest/api/1.0/projects?limit='
+                . $limit, self::$options);
             return new ProjectMapper($response);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Creates a new Project
+     *
+     * @param Project $project
+     * @return Project
+     */
+    public function createProject(Project $project)
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'key' => $project->getKey(),
+                'name' => $project->getName()
+            ]
+        ]);
+        try {
+            $response = $this->getClient()->request('POST', self::$endpoint . '/rest/api/1.0/projects?create', $options);
+            return self::mapSingleResponse($response, ProjectMapper::class);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
         }
@@ -104,7 +130,7 @@ class Api
     {
         try {
             $response = $this->getClient()->request('GET',
-                self::$endpoint . sprintf('/rest/api/1.0/projects/%s/repos?limit=' . $limit, $projectKey), self::$auth);
+                self::$endpoint . sprintf('/rest/api/1.0/projects/%s/repos?limit=' . $limit, $projectKey), self::$options);
             return new RepositoryMapper($response);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
@@ -122,7 +148,7 @@ class Api
         try {
             $response = $this->getClient()->request('GET',
                 self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
-                '/repos/' . $repository->getSlug() . '/branches', self::$auth);
+                '/repos/' . $repository->getSlug() . '/branches', self::$options)->withHeader('Content-Type', 'image/png');
             return new BranchMapper($response);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
@@ -143,7 +169,7 @@ class Api
             $response = $this->getClient()->request('GET',
                 self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
                 '/repos/' . $repository->getSlug() . '/commits/?until=' .
-                $branchName . '&limit=' . $limit, self::$auth);
+                $branchName . '&limit=' . $limit, self::$options);
             return new CommitMapper($response);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
@@ -155,26 +181,47 @@ class Api
      *
      * @param \Exception $exception
      * @return void
+     * @throws ConflictException
      * @throws Exception
      * @throws UnauthorizedException
      */
     protected function exceptionHandler(\Exception $exception)
     {
         if ($exception instanceof ClientException) {
-            if ($exception->getResponse()->getStatusCode() === 401) {
-                $json = null;
-                try {
-                    $json = \GuzzleHttp\json_decode($exception->getResponse()->getBody());
-                } catch (\Exception $jsonDecodeException) {
-                    // Just doesn't do anything while the general exception can be thrown
-                }
-                if (isset($json->errors[0]->message)) {
-                    throw new UnauthorizedException($json->errors[0]->message);
-                }
-                throw new UnauthorizedException($exception);
+            $statusCode = $exception->getResponse()->getStatusCode();
+            // Tries to resolve the initial error message by Atlassian
+            $errorMessage = null;
+            try {
+                $json = \GuzzleHttp\json_decode($exception->getResponse()->getBody());
+                $errorMessage = (isset($json->errors[0]->message) ? $json->errors[0]->message : null);
+            } catch (\Exception $jsonDecodeException) {
+                // Here we do just nothing ;)
+            }
+            switch ($statusCode) {
+                case 401:
+                    throw new UnauthorizedException(($errorMessage ?: $exception));
+                    break;
+                case 409:
+                    throw new ConflictException(($errorMessage ?: $exception));
+                    break;
+                default:
+                    throw new Exception(($errorMessage ?: $exception));
             }
         }
-        throw $exception;
+        throw new Exception($exception);
+    }
+
+    /**
+     * Maps Single Response
+     *
+     * @param Response $response
+     * @param string $mapper
+     * @return mixed
+     * @static
+     */
+    static public function mapSingleResponse(Response $response, $mapper)
+    {
+        return $mapper::map(\GuzzleHttp\json_decode($response->getBody()));
     }
 
 }
