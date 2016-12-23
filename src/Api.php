@@ -189,8 +189,25 @@ class Api
         try {
             $response = $this->getClient()->request('GET',
                 self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
-                '/repos/' . $repository->getSlug() . '/branches', self::$options)->withHeader('Content-Type', 'image/png');
+                '/repos/' . $repository->getSlug() . '/branches', self::$options);
             return new BranchMapper($response);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Delete Repository
+     *
+     * @param Repository $repository
+     * @return void
+     */
+    public function deleteRepository(Repository $repository)
+    {
+        try {
+            $this->getClient()->request('DELETE',
+                self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
+                '/repos/' . $repository->getSlug(), self::$options);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
         }
