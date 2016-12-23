@@ -2,6 +2,7 @@
 namespace ArekvanSchaijk\BitbucketServerClient\Api\Entity;
 
 use ArekvanSchaijk\BitbucketServerClient\Api;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
 
 /**
  * Class Repository
@@ -347,6 +348,19 @@ class Repository
             $this->commits[$branchName] = $api->getCommits($this, $branchName);
         }
         return $this->commits[$branchName];
+    }
+
+    /**
+     * Creates a Branch
+     *
+     * @param Branch $branchFrom
+     * @param string $branchName
+     * @return Branch
+     */
+    public function createBranch(Branch $branchFrom, $branchName)
+    {
+        $api = new Api();
+        return $api->createRepositoryBranch($this, $branchFrom, $branchName);
     }
 
     /**

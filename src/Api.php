@@ -7,6 +7,7 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\CommitMapper
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\ConflictException;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\UnauthorizedException;
 use GuzzleHttp\Client;
@@ -137,6 +138,31 @@ class Api
             $response = $this->getClient()->request('POST', self::$endpoint . '/rest/api/1.0/projects/'
                 . $project->getKey() . '/repos?create', $options);
             return self::mapSingleResponse($response, RepositoryMapper::class);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Creates a Repository Branch
+     *
+     * @param Repository $repository
+     * @param Branch $branchFrom
+     * @param string $branchName
+     * @return Branch
+     */
+    public function createRepositoryBranch(Repository $repository, Branch $branchFrom, $branchName)
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'name' => $branchName,
+                'startPoint' => $branchFrom->getId(),
+            ]
+        ]);
+        try {
+            $response = $this->getClient()->request('POST', self::$endpoint . '/rest/branch-utils/latest/projects/'
+                . $repository->getProject()->getKey() . '/repos/' . $repository->getSlug() . '/branches', $options);
+            return self::mapSingleResponse($response, BranchMapper::class);
         } catch (\Exception $exception) {
             $this->exceptionHandler($exception);
         }
