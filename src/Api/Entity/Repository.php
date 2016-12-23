@@ -349,4 +349,16 @@ class Repository
         return $this->commits[$branchName];
     }
 
+    /**
+     * Creates a HipChat Integration
+     *
+     * @param int $roomId
+     * @return void
+     */
+    public function createHipChatIntegration($roomId)
+    {
+        $api = new Api();
+        $api->createRepositoryHipChatIntegration($this, $roomId);
+    }
+
 }

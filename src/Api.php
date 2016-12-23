@@ -143,6 +143,24 @@ class Api
     }
 
     /**
+     * Create Repository HipChat Integration
+     *
+     * @param Repository $repository
+     * @param int $roomId
+     * @return void
+     */
+    public function createRepositoryHipChatIntegration(Repository $repository, $roomId)
+    {
+        try {
+            $this->getClient()->request('PUT', self::$endpoint . '/rest/hipchat-integrations/latest/'
+                . 'projects/' . $repository->getProject()->getKey() . '/repos/' . $repository->getSlug() . '/rooms/'
+                . $roomId, self::$options);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
      * Gets the Repositories
      *
      * @param string $projectKey
