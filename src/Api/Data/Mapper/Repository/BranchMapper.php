@@ -2,6 +2,7 @@
 namespace ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository;
 
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Adapter;
+use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
 
 /**
@@ -41,8 +42,17 @@ class BranchMapper extends Adapter
         $branch = new Branch();
         $branch->setId((string)$data->id);
         $branch->setName((string)$data->displayId);
-        $branch->setType((string)$data->type);
-        $branch->setIsDefault((bool)$data->isDefault);
+        if (isset($data->type)) {
+            $branch->setType((string)$data->type);
+        }
+        if (isset($data->isDefault)) {
+            $branch->setIsDefault((bool)$data->isDefault);
+        }
+        if (isset($data->repository)) {
+            $branch->setRepository(
+                RepositoryMapper::map($data->repository)
+            );
+        }
         return $branch;
     }
 

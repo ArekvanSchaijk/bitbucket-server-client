@@ -3,6 +3,7 @@ namespace ArekvanSchaijk\BitbucketServerClient\Api\Entity;
 
 use ArekvanSchaijk\BitbucketServerClient\Api;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\PullRequest;
 
 /**
  * Class Repository
@@ -373,6 +374,34 @@ class Repository
     {
         $api = new Api();
         $api->createRepositoryHipChatIntegration($this, $roomId);
+    }
+
+    /**
+     * Gets the Pull Requests
+     *
+     * @param string|null $state
+     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\PullRequest>
+     */
+    public function getPullRequests($state = null)
+    {
+        $api = new Api();
+        return $api->getPullRequestsByRepository($this, $state);
+    }
+
+    /**
+     * Creates a new PullRequest
+     *
+     * @param string $title
+     * @param string $description
+     * @param Branch $fromBranch
+     * @param Branch $toBranch
+     * @param User[] $reviewers
+     * @return PullRequest
+     */
+    public function createPullRequest($title, $description = '', Branch $fromBranch, Branch $toBranch, array $reviewers = [])
+    {
+        $api = new Api();
+        return $api->createPullRequest($this, $title, $description, $fromBranch, $toBranch, $reviewers);
     }
 
 }

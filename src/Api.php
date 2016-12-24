@@ -4,10 +4,14 @@ namespace ArekvanSchaijk\BitbucketServerClient;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\ProjectMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\BranchMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\CommitMapper;
+use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\PullRequestMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Author;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\PullRequest;
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\User;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\ConflictException;
 use ArekvanSchaijk\BitbucketServerClient\Api\Exception\UnauthorizedException;
 use GuzzleHttp\Client;
@@ -205,10 +209,159 @@ class Api
     }
 
     /**
+     * Gets the Pull Requests By Repository
+     *
+     * @param Repository $repository
+     * @param string|null $state
+     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\PullRequest>
+     */
+    public function getPullRequestsByRepository(Repository $repository, $state = null)
+    {
+        $state = ($state ?: PullRequest::STATE_OPEN);
+        try {
+            $response = $this->getClient()->request('GET',
+                self::$endpoint . '/rest/api/1.0/projects/' . $repository->getProject()->getKey() .
+                '/repos/' . $repository->getSlug() . '/pull-requests?' . $state, self::$options);
+            return new PullRequestMapper($response);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Creates a new PullRequest
+     *
+     * @param Repository $repository
+     * @param string $title
+     * @param string $description
+     * @param Branch $fromBranch
+     * @param Branch $toBranch
+     * @param User[] $reviewers
+     * @return PullRequest
+     */
+    public function createPullRequest(Repository $repository, $title, $description = '', Branch $fromBranch, Branch $toBranch, array $reviewers = [])
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'title' => $title,
+                'description' => $description,
+                'state' => PullRequest::STATE_OPEN,
+                'closed' => false,
+                'fromRef' => [
+                    'id' => $fromBranch->getId(),
+                    'name' => null,
+                    'project' => [
+                        'key' => $repository->getProject()->getKey()
+                    ]
+                ],
+                'toRef' => [
+                    'id' => $toBranch->getId(),
+                    'name' => null,
+                    'project' => [
+                        'key' => $repository->getProject()->getKey()
+                    ]
+                ],
+                'locked' => false,
+                'links' => [
+                    'self' => [
+                        null
+                    ]
+                ]
+            ]
+        ]);
+        // Adds the reviewers
+        if ($reviewers) {
+            $users = [];
+            foreach ($reviewers as $reviewer) {
+                $users[]['user']['name'] = $reviewer->getName();
+            }
+            $options['json']['reviewers'] = $users;
+        }
+        try {
+            $response = $this->getClient()->request('POST', self::$endpoint . '/rest/api/1.0/projects/'
+                . $repository->getProject()->getKey() . '/repos/' . $repository->getSlug()
+                . '/pull-requests?create', $options);
+            return self::mapSingleResponse($response, PullRequestMapper::class);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Merge Pull Request
+     *
+     * @param Repository $repository
+     * @param PullRequest $pullRequest
+     * @return void
+     */
+    public function mergePullRequest(Repository $repository, PullRequest $pullRequest)
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'version' => $pullRequest->getVersion(),
+                'message' => ''
+            ],
+        ]);
+        try {
+            $this->getClient()->request('POST', self::$endpoint . '/rest/api/latest/projects/'
+                . $repository->getProject()->getKey() . '/repos/' . $repository->getSlug() . '/pull-requests/'
+                . $pullRequest->getId() . '/merge', $options);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Decline Pull Request
+     *
+     * @param Repository $repository
+     * @param PullRequest $pullRequest
+     * @return void
+     */
+    public function declinePullRequest(Repository $repository, PullRequest $pullRequest)
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'version' => $pullRequest->getVersion()
+            ],
+        ]);
+        try {
+            $this->getClient()->request('POST', self::$endpoint . '/rest/api/latest/projects/'
+                . $repository->getProject()->getKey() . '/repos/' . $repository->getSlug() . '/pull-requests/'
+                . $pullRequest->getId() . '/decline', $options);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
+     * Reopen Pull Request
+     *
+     * @param Repository $repository
+     * @param PullRequest $pullRequest
+     * @return void
+     */
+    public function reopenPullRequest(Repository $repository, PullRequest $pullRequest)
+    {
+        $options = array_merge(self::$options, [
+            'json' => [
+                'version' => $pullRequest->getVersion()
+            ]
+        ]);
+        try {
+            $this->getClient()->request('POST', self::$endpoint . '/rest/api/latest/projects/'
+                . $repository->getProject()->getKey() . '/repos/' . $repository->getSlug() . '/pull-requests/'
+                . $pullRequest->getId() . '/reopen', $options);
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
+        }
+    }
+
+    /**
      * Gets the Repository Branches
      *
      * @param Repository $repository
-     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch>
+     * @return \SplObjectStorage<\ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\PullRequest>
      */
     public function getRepositoryBranches(Repository $repository)
     {

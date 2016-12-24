@@ -1,6 +1,8 @@
 <?php
 namespace ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 
+use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
+
 /**
  * Class Branch
  * @author Arek van Schaijk <info@ucreation.nl>
@@ -27,6 +29,11 @@ class Branch
      * @var bool
      */
     protected $isDefault = FALSE;
+
+    /**
+     * @var Repository
+     */
+    protected $repository;
 
     /**
      * Gets the Id
@@ -107,5 +114,26 @@ class Branch
     {
         $this->isDefault = $isDefault;
     }
+
+    /**
+     * Gets the Repository
+     *
+     * @return Repository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * Sets the Repository
+     *
+     * @param Repository $repository
+     */
+    public function setRepository(Repository $repository)
+    {
+        $this->repository = $repository;
+    }
+
 
 }
