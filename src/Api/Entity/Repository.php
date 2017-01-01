@@ -337,6 +337,23 @@ class Repository
     }
 
     /**
+     * Get Branch By Name
+     *
+     * @param string $branchName
+     * @return Branch|bool
+     */
+    public function getBranchByName($branchName)
+    {
+        /* @var Branch $branch */
+        foreach ($this->getBranches() as $branch) {
+            if ($branch->getName() === $branchName) {
+                return $branch;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Gets the Commits
      *
      * @param string $branchName
