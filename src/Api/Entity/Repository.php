@@ -421,4 +421,15 @@ class Repository
         return $api->createPullRequest($this, $title, $description, $fromBranch, $toBranch, $reviewers);
     }
 
+    /**
+     * Delete
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        $api = new Api();
+        $api->deleteRepository($this);
+    }
+
 }

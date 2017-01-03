@@ -59,7 +59,7 @@ class Api
      */
     public function login($username, $password)
     {
-        self::$options = ['auth' => [$username, $password]];
+        self::$options = array_merge(self::$options, ['auth' => [$username, $password]]);
     }
 
     /**
