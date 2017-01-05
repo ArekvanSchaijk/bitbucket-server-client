@@ -6,7 +6,6 @@ use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\BranchMapper
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\CommitMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\Repository\PullRequestMapper;
 use ArekvanSchaijk\BitbucketServerClient\Api\Data\Mapper\RepositoryMapper;
-use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Author;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Project;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository;
 use ArekvanSchaijk\BitbucketServerClient\Api\Entity\Repository\Branch;
@@ -69,7 +68,7 @@ class Api
      */
     public function logout()
     {
-        self::$options = [];
+        unset(self::$options['auth']);
     }
 
     /**
